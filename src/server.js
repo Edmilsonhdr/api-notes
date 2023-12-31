@@ -1,4 +1,5 @@
 require("express-async-errors");
+const database = require('./database/sqlite');
 const AppError = require('./utils/AppError.js');
 const express = require("express");
 
@@ -9,6 +10,8 @@ app.use(express.json());
 
 app.use(routes);
 
+database();
+
 app.use((error, req, res, next) => {
     if (error instanceof AppError) {
         return res.status(error.statusCode).json({
@@ -16,8 +19,8 @@ app.use((error, req, res, next) => {
             message: error.message
         })
     }
-
-    return res.status(500).jsom({
+    console.log(error)
+    return res.status(500).json({
         status: "error",
         massage: "Internal server error"
     })
