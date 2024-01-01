@@ -66,6 +66,45 @@ class NotesController {
         return res.json();
     }
 
+    async index(req, res) {
+        try {
+            const { title, user_id, tags } = req.query;
+
+            let notes;
+
+            if (tags) {
+                const filterTags = tags.split(',').map(tag => tag.trim());
+
+                notes = await knex("tags")
+                    .select([
+                        "notes.id",
+                        "notes.title",
+                        "notes.user_id"
+                    ])
+                    .where("notes.user_id", user_id)
+                    .whereLike("notes.title", `%${title}%`)
+                    .whereIn("name", filterTags)
+                    .innerJoin("notes", "notes.id", "tags.note_id")
+                    .orderBy("title")
+
+            } else {
+
+                // Utilize o método 'select' para explicitamente selecionar as colunas desejadas
+                notes = await knex("notes")
+                    .where({ user_id })
+                    .whereLike("title", `%${title}%`)
+                    .orderBy("title");
+
+
+            }
+            return res.json(notes);
+        } catch (error) {
+            console.error("Erro ao buscar notas:", error);
+            return res.status(500).json({ error: "Erro interno ao processar a solicitação." });
+        }
+    }
+
+
 }
 
 module.exports = NotesController;
