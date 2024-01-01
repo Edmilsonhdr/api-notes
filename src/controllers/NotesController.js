@@ -97,7 +97,18 @@ class NotesController {
 
 
             }
-            return res.json(notes);
+
+            const userTag = await knex("tags").where({ user_id });
+            const notesWithTags = notes.map(note => {
+                const noteTags = userTag.filter(tag => tag.note_id === note.id);
+
+                return {
+                    ...note,
+                    tags: noteTags
+                }
+            });
+
+            return res.json(notesWithTags);
         } catch (error) {
             console.error("Erro ao buscar notas:", error);
             return res.status(500).json({ error: "Erro interno ao processar a solicitação." });
