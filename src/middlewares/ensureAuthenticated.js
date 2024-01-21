@@ -3,8 +3,9 @@ const AppError = require("../utils/AppError");
 const authConfig = require("../configs/auth");
 
 function ensureAuthenticated(req, res, next) {
-    const authHeader = req.headers.autorization;
 
+    const authHeader = req.headers.authorization;
+    console.log(req.headers);
     if (!authHeader) {
         throw new AppError("JWT Token não informado", 401);
     }
@@ -12,7 +13,7 @@ function ensureAuthenticated(req, res, next) {
     const [, token] = authHeader.split(" ");
 
     try {
-        const { sub: usef_id } = verify(token, authConfig.jwt.secret);
+        const { sub: user_id } = verify(token, authConfig.jwt.secret);
 
         req.user = {
             id: Number(user_id),
@@ -24,3 +25,5 @@ function ensureAuthenticated(req, res, next) {
         throw new AppError("JWT Token invalido", 401);
     }
 }
+
+module.exports = ensureAuthenticated;

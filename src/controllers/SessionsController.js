@@ -16,7 +16,7 @@ class SessionsController {
         const { email, password } = req.body;
 
         const user = await knex("users").where({ email }).first();
-        console.log(user)
+        // console.log(user)
 
         if (!user) {
             throw new AppError("E-mail e/ou senha incorreta", 401);
